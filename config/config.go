@@ -17,10 +17,20 @@ import (
 const Prefix = "LORAN_"
 
 type (
+	// Config represents application configuration struct.
 	Config struct {
-		NATS NATS `koanf:"nats"`
+		Logger Logger `koanf:"logger"`
+		NATS   NATS   `koanf:"nats"`
 	}
 
+	// Logger represents logger configuration struct.
+	Logger struct {
+		Level string `koanf:"level"`
+	}
+
+	// NATS represents nats configuration struct.
+	// Its dependency is JetStream struct.
+	// For more information, see JetStream.
 	NATS struct {
 		URL            string        `koanf:"url"`
 		ReconnectWait  time.Duration `koanf:"reconnect-wait"`
@@ -29,6 +39,10 @@ type (
 		JetStream      JetStream     `koanf:"jet-stream"`
 	}
 
+	// JetStream represents jet stream configuration struct.
+	// It has just some configurations of nats jet stream
+	// that needed in this application.
+	// Its dependency is Consumer struct.
 	JetStream struct {
 		Enable    bool             `koanf:"enable"`
 		Consumers []Consumer       `koanf:"consumers"`
@@ -38,6 +52,7 @@ type (
 		Storage   nats.StorageType `koanf:"storage"`
 	}
 
+	// Consumer represents consumer configuration struct.
 	Consumer struct {
 		Durable string `koanf:"durable"`
 		Stream  string `koanf:"stream"`
