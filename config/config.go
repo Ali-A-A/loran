@@ -21,6 +21,7 @@ type (
 	Config struct {
 		Logger Logger `koanf:"logger"`
 		NATS   NATS   `koanf:"nats"`
+		Redis  Redis  `koanf:"redis"`
 	}
 
 	// Logger represents logger configuration struct.
@@ -57,6 +58,28 @@ type (
 		Durable string `koanf:"durable"`
 		Stream  string `koanf:"stream"`
 		Subject string `koanf:"subject"`
+	}
+
+	// Redis represents redis configuration struct.
+	Redis struct {
+		Master RedisConfig `mapstructure:"master" validate:"required"`
+		Slave  RedisConfig `mapstructure:"slave" validate:"required"`
+	}
+
+	// RedisConfig represents redis configs
+	RedisConfig struct {
+		SlaveOnly       bool          `mapstructure:"slave-only"`
+		Address         string        `mapstructure:"address"`
+		PoolSize        int           `mapstructure:"pool-size"`
+		MinIdleConns    int           `mapstructure:"min-idle-conns"`
+		DialTimeout     time.Duration `mapstructure:"dial-timeout"`
+		ReadTimeout     time.Duration `mapstructure:"read-timeout"`
+		WriteTimeout    time.Duration `mapstructure:"write-timeout"`
+		PoolTimeout     time.Duration `mapstructure:"pool-timeout"`
+		IdleTimeout     time.Duration `mapstructure:"idle-timeout"`
+		MaxRetries      int           `mapstructure:"max-retries"`
+		MinRetryBackoff time.Duration `mapstructure:"min-retry-backoff"`
+		MaxRetryBackoff time.Duration `mapstructure:"max-retry-backoff"`
 	}
 )
 
