@@ -1,54 +1,74 @@
 package cmq
 
 import (
-	"time"
+	"github.com/Ali-A-A/loran/config"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	wait = 10
-)
-
-// NatsOptions represents nats connection options
-type NatsOptions struct {
-	URL             string
-	Subject string
+// Conn represents nats jet stream connections.
+type Conn struct {
+	NC *nats.Conn
+	JS nats.JetStreamContext
 }
 
-// NewNatsConn creates new nats connection
-func NewNatsConn(natsConfig NatsOptions) *nats.Conn {
-	// Connect Options
-	opts := []nats.Option{nats.Name("NATS Subscriber")}
-	opts = setupConnOptions(opts)
+// CreateConnection returns new nats connection with some options that
+// they are specified in config.NATS config.
+func CreateConnection(cfg config.NATS) (*nats.Conn, error) {
+	opts := connectionOpts(cfg)
 
-	// Connect to NATS
-	nc, err := nats.Connect(natsConfig.URL, opts...)
+	conn, err := nats.Connect(cfg.URL, opts...)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Errorf("could not connect to nats server %s: %s", cfg.URL, err)
+		return nil, err
 	}
 
-	return nc
+	return conn, nil
 }
 
-func setupConnOptions(opts []nats.Option) []nats.Option {
-	totalWait := wait * time.Minute
-	reconnectDelay := time.Second
+// CreateJetStreamConnection returns new Conn using CreateConnection function.
+// For more information, see CreateConnection.
+func CreateJetStreamConnection(cfg config.NATS) (*Conn, error) {
+	nc, err := CreateConnection(cfg)
+	if err != nil {
+		return nil, err
+	}
 
-	opts = append(opts, nats.ReconnectWait(reconnectDelay))
-	opts = append(opts, nats.MaxReconnects(int(totalWait/reconnectDelay)))
+	js, err := nc.JetStream(nats.MaxWait(cfg.JetStream.MaxWait))
+	if err != nil {
+		logrus.Errorf("could not connect to jetstream %s: %s", cfg.URL, err)
+		return nil, err
+	}
+
+	return &Conn{
+		NC: nc,
+		JS: js,
+	}, nil
+}
+
+// connectionOpts returns some nats connection options.
+func connectionOpts(cfg config.NATS) []nats.Option {
+	var opts []nats.Option
+
+	opts = append(opts, nats.ReconnectWait(cfg.ReconnectWait))
+
+	opts = append(opts, nats.MaxReconnects(cfg.MaxReconnect))
+
+	opts = append(opts, nats.ErrorHandler(func(nc *nats.Conn, sub *nats.Subscription, err error) {
+		logrus.Errorf("nats error handler: url: %s subject: %s error: %s", nc.ConnectedUrl(), sub.Subject, err)
+	}))
+
 	opts = append(opts, nats.DisconnectErrHandler(func(nc *nats.Conn, err error) {
-		logrus.Printf("Disconnected due to:%s, will attempt reconnects for %.0fm", err, totalWait.Minutes())
+		logrus.Errorf("nats disconnected error handler: url: %s error: %s", nc.ConnectedUrl(), err)
 	}))
-	opts = append(opts, nats.ErrorHandler(func(_ *nats.Conn, _ *nats.Subscription, err error) {
-		logrus.Errorf("nats error handler: %s", err)
-	}))
+
 	opts = append(opts, nats.ReconnectHandler(func(nc *nats.Conn) {
-		logrus.Printf("Reconnected [%s]", nc.ConnectedUrl())
+		logrus.Infof("nats reconnect handler: [%s]", nc.ConnectedUrl())
 	}))
+
 	opts = append(opts, nats.ClosedHandler(func(nc *nats.Conn) {
-		logrus.Fatalf("Exiting: %v", nc.LastError())
+		logrus.Warnf("nats close handler: %v", nc.LastError())
 	}))
 
 	return opts

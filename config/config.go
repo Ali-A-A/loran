@@ -1,7 +1,9 @@
 package config
 
 import (
+	"github.com/nats-io/nats.go"
 	"strings"
+	"time"
 
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
@@ -15,7 +17,32 @@ import (
 const Prefix = "LORAN_"
 
 type (
-	Config struct {}
+	Config struct {
+		NATS NATS `koanf:"nats"`
+	}
+
+	NATS struct {
+		URL            string        `koanf:"url"`
+		ReconnectWait  time.Duration `koanf:"reconnect-wait"`
+		MaxReconnect   int           `koanf:"max-reconnect"`
+		PublishEnabled bool          `koanf:"publish-enabled"`
+		JetStream      JetStream     `koanf:"jet-stream"`
+	}
+
+	JetStream struct {
+		Enable    bool             `koanf:"enable"`
+		Consumers []Consumer       `koanf:"consumers"`
+		MaxWait   time.Duration    `koanf:"max-wait"`
+		Replicas  int              `koanf:"replicas"`
+		MaxAge    time.Duration    `koanf:"max-age"`
+		Storage   nats.StorageType `koanf:"storage"`
+	}
+
+	Consumer struct {
+		Durable string `koanf:"durable"`
+		Stream  string `koanf:"stream"`
+		Subject string `koanf:"subject"`
+	}
 )
 
 func Init() Config {
