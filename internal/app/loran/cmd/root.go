@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/Ali-A-A/loran/config"
-	"github.com/Ali-A-A/loran/internal/app/loran/cmd/consumer"
-	"github.com/Ali-A-A/loran/pkg/log"
+	"github.com/ali-a-a/loran/config"
+	"github.com/ali-a-a/loran/internal/app/loran/cmd/consumer"
+	"github.com/ali-a-a/loran/pkg/log"
 
 	"github.com/spf13/cobra"
 )

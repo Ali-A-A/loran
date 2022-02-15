@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Ali-A-A/loran/config"
+	"github.com/ali-a-a/loran/config"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

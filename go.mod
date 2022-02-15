@@ -1,4 +1,4 @@
-module github.com/Ali-A-A/loran
+module github.com/ali-a-a/loran
 
 go 1.17
 

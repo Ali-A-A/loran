@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 
-	"github.com/Ali-A-A/loran/config"
+	"github.com/ali-a-a/loran/config"
 
 	"github.com/go-redis/redis/v8"
 )

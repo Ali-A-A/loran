@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/Ali-A-A/loran/internal/app/loran/cmd"
+	"github.com/ali-a-a/loran/internal/app/loran/cmd"
 
 	_ "go.uber.org/automaxprocs"
 )

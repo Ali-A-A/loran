@@ -1,7 +1,7 @@
 package cmq
 
 import (
-	"github.com/Ali-A-A/loran/config"
+	"github.com/ali-a-a/loran/config"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
