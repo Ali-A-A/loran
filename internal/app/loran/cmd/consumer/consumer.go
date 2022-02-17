@@ -1,6 +1,8 @@
 package consumer
 
 import (
+	"github.com/ali-a-a/loran/pkg/cmq"
+	"github.com/ali-a-a/loran/pkg/redis"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +15,26 @@ import (
 
 // nolint:funlen
 func main(cfg config.Config) {
+	conn, err := cmq.CreateJetStreamConnection(cfg.NATS)
+	if err != nil {
+		logrus.Fatalf("failed to create nats connection: %s", err.Error())
+	}
+
+	defer func() {
+		conn.NC.Close()
+	}()
+
+	rc, err := redis.NewRedisClient(cfg.Redis)
+	if err != nil {
+		logrus.Fatalf("failed to create redis connection: %s", err.Error())
+	}
+
+	defer func() {
+		if err := rc.Close(); err != nil {
+			logrus.Errorf("redis close error: %s", err.Error())
+		}
+	}()
+
 	signals := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 
