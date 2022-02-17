@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/nats-io/nats.go"
 	"strings"
 	"time"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
+	"github.com/nats-io/nats.go"
 
 	"github.com/knadh/koanf"
 	"github.com/sirupsen/logrus"
@@ -45,12 +45,12 @@ type (
 	// that needed in this application.
 	// Its dependency is Consumer struct.
 	JetStream struct {
-		Enable    bool             `koanf:"enable"`
-		Consumers Consumer       `koanf:"consumers"`
-		MaxWait   time.Duration    `koanf:"max-wait"`
-		Replicas  int              `koanf:"replicas"`
-		MaxAge    time.Duration    `koanf:"max-age"`
-		Storage   nats.StorageType `koanf:"storage"`
+		Enable   bool             `koanf:"enable"`
+		Consumer Consumer         `koanf:"consumers"`
+		MaxWait  time.Duration    `koanf:"max-wait"`
+		Replicas int              `koanf:"replicas"`
+		MaxAge   time.Duration    `koanf:"max-age"`
+		Storage  nats.StorageType `koanf:"storage"`
 	}
 
 	// Consumer represents consumer configuration struct.
@@ -63,7 +63,6 @@ type (
 	// Redis represents redis configuration struct.
 	Redis struct {
 		Master RedisConfig `mapstructure:"master" validate:"required"`
-		Slave  RedisConfig `mapstructure:"slave" validate:"required"`
 	}
 
 	// RedisConfig represents redis configs

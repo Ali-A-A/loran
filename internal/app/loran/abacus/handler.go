@@ -2,6 +2,7 @@ package abacus
 
 import (
 	"fmt"
+
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/pkg/cmq"
 	"github.com/go-redis/redis/v8"
@@ -49,7 +50,7 @@ func NewHandler(rc *redis.Client, conn *cmq.Conn) (*Handler, error) {
 // Then, it starts to fetch messages from server and submits them into the pool.
 // It get config.NATS to figure out the subject and durable of the nats.
 func (h *Handler) Run(cfg config.NATS) error {
-	sub, err := h.nc.JS.PullSubscribe(cfg.JetStream.Consumers.Subject, cfg.JetStream.Consumers.Durable)
+	sub, err := h.nc.JS.PullSubscribe(cfg.JetStream.Consumer.Subject, cfg.JetStream.Consumer.Durable)
 	if err != nil {
 		return fmt.Errorf("failed to run handler: %w", err)
 	}
@@ -64,7 +65,6 @@ func (h *Handler) fetch(sub *nats.Subscription) {
 	for {
 		messages, err := sub.Fetch(workerSize)
 		if err != nil {
-			logrus.Errorf("failed to fetch message: %s", err.Error())
 			continue
 		}
 
@@ -81,6 +81,11 @@ func (h *Handler) fetch(sub *nats.Subscription) {
 // newTask creates new pool task.
 func (h *Handler) newTask(message *nats.Msg) func() {
 	return func() {
+		err := message.Ack()
+		if err != nil {
+			logrus.Errorf("failed to ack message: %s", err.Error())
+		}
+
 		logrus.Infof("new message received: %s", string(message.Data))
 	}
 }

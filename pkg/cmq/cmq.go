@@ -1,6 +1,8 @@
 package cmq
 
 import (
+	"errors"
+
 	"github.com/ali-a-a/loran/config"
 
 	"github.com/nats-io/nats.go"
@@ -38,6 +40,39 @@ func CreateJetStreamConnection(cfg config.NATS) (*Conn, error) {
 	js, err := nc.JetStream(nats.MaxWait(cfg.JetStream.MaxWait))
 	if err != nil {
 		logrus.Errorf("could not connect to jetstream %s: %s", cfg.URL, err)
+		return nil, err
+	}
+
+	stream := cfg.JetStream.Consumer.Stream
+
+	// First, we should check that our stream is exists or not.
+	// Then, If stream is not found, we could add stream.
+	_, err = js.StreamInfo(stream)
+	if errors.Is(err, nats.ErrStreamNotFound) {
+		if _, err = js.AddStream(&nats.StreamConfig{
+			Name:     cfg.JetStream.Consumer.Stream,
+			Subjects: []string{cfg.JetStream.Consumer.Subject},
+			MaxAge:   cfg.JetStream.MaxAge,
+			Storage:  cfg.JetStream.Storage,
+		}); err != nil {
+			return nil, err
+		}
+	} else if err != nil {
+		return nil, err
+	}
+
+	consumer := cfg.JetStream.Consumer.Durable
+
+	// Similar to adding new stream.
+	_, err = js.ConsumerInfo(stream, consumer)
+	if errors.Is(err, nats.ErrConsumerNotFound) {
+		if _, err = js.AddConsumer(stream, &nats.ConsumerConfig{
+			Durable:   cfg.JetStream.Consumer.Durable,
+			AckPolicy: nats.AckExplicitPolicy,
+		}); err != nil {
+			return nil, err
+		}
+	} else if err != nil {
 		return nil, err
 	}
 

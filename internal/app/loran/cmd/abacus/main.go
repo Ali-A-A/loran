@@ -1,12 +1,12 @@
 package abacus
 
 import (
-	"github.com/ali-a-a/loran/internal/app/loran/abacus"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/ali-a-a/loran/config"
+	"github.com/ali-a-a/loran/internal/app/loran/abacus"
 	"github.com/ali-a-a/loran/pkg/cmq"
 	"github.com/ali-a-a/loran/pkg/redis"
 	"github.com/sirupsen/logrus"
@@ -38,14 +38,16 @@ func main(cfg config.Config) {
 
 	handler, err := abacus.NewHandler(rc, conn)
 	if err != nil {
-		logrus.Fatalf("failed to create new handler: %s", err.Error())
+		logrus.Fatalf("failed to create new abacus handler: %s", err.Error())
 	}
 
 	go func() {
 		if err = handler.Run(cfg.NATS); err != nil {
-			logrus.Fatalf("failed to create new handler: %s", err.Error())
+			logrus.Fatalf("failed to create run abacus handler: %s", err.Error())
 		}
 	}()
+
+	logrus.Info("abacus is ready!")
 
 	signals := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
@@ -54,7 +56,7 @@ func main(cfg config.Config) {
 
 	go func() {
 		sig := <-signals
-		logrus.Info("Signal received: ", sig)
+		logrus.Info("signal received: ", sig)
 		done <- true
 	}()
 
