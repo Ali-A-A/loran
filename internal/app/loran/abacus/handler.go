@@ -1,7 +1,10 @@
 package abacus
 
 import (
+	"encoding/json"
 	"fmt"
+
+	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
 
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/pkg/cmq"
@@ -85,11 +88,18 @@ func (h *Handler) fetch(sub *nats.Subscription) {
 // newTask creates new pool task.
 func (h *Handler) newTask(message *nats.Msg) func() {
 	return func() {
+		req := &cranmer.AddRequest{}
+
+		if err := json.Unmarshal(message.Data, req); err != nil {
+			logrus.Errorf("failed to unmarshal data: %s", err.Error())
+			return
+		}
+
+		logrus.Infof("new message received: user_id: %d entity_id: %d", req.UserID, req.EntityID)
+
 		err := message.Ack()
 		if err != nil {
 			logrus.Errorf("failed to ack message: %s", err.Error())
 		}
-
-		logrus.Infof("new message received: %s", string(message.Data))
 	}
 }
