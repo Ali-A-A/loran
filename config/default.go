@@ -9,6 +9,12 @@ import (
 // nolint:gomnd,funlen
 func Default() Config {
 	return Config{
+		Logger: Logger{
+			Level: "info",
+		},
+		Cranmer: Cranmer{
+			Port: 8081,
+		},
 		NATS: NATS{
 			URL:            "127.0.0.1",
 			ReconnectWait:  1 * time.Second,
