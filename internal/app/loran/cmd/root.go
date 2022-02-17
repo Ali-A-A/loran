@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/ali-a-a/loran/config"
-	"github.com/ali-a-a/loran/internal/app/loran/cmd/consumer"
+	"github.com/ali-a-a/loran/internal/app/loran/cmd/abacus"
 	"github.com/ali-a-a/loran/pkg/log"
 
 	"github.com/spf13/cobra"
@@ -21,7 +21,7 @@ func NewRootCommand() *cobra.Command {
 		StdOut: true,
 	})
 
-	consumer.Register(root, cfg)
+	abacus.Register(root, cfg)
 
 	return root
 }

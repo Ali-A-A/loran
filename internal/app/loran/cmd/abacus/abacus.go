@@ -1,15 +1,15 @@
-package consumer
+package abacus
 
 import (
-	"github.com/ali-a-a/loran/pkg/cmq"
-	"github.com/ali-a-a/loran/pkg/redis"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/ali-a-a/loran/config"
-
+	"github.com/ali-a-a/loran/pkg/cmq"
+	"github.com/ali-a-a/loran/pkg/redis"
 	"github.com/sirupsen/logrus"
+
 	"github.com/spf13/cobra"
 )
 
@@ -53,8 +53,8 @@ func main(cfg config.Config) {
 func Register(root *cobra.Command, cfg config.Config) {
 	root.AddCommand(
 		&cobra.Command{
-			Use:   "server",
-			Short: "Run Loran consumer component",
+			Use:   "abacus",
+			Short: "Run loran abacus component",
 			Run: func(cmd *cobra.Command, args []string) {
 				main(cfg)
 			},
