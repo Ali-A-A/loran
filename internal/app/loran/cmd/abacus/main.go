@@ -1,6 +1,7 @@
 package abacus
 
 import (
+	"github.com/ali-a-a/loran/internal/app/loran/abacus"
 	"os"
 	"os/signal"
 	"syscall"
@@ -32,6 +33,17 @@ func main(cfg config.Config) {
 	defer func() {
 		if err := rc.Close(); err != nil {
 			logrus.Errorf("redis close error: %s", err.Error())
+		}
+	}()
+
+	handler, err := abacus.NewHandler(rc, conn)
+	if err != nil {
+		logrus.Fatalf("failed to create new handler: %s", err.Error())
+	}
+
+	go func() {
+		if err = handler.Run(cfg.NATS); err != nil {
+			logrus.Fatalf("failed to create new handler: %s", err.Error())
 		}
 	}()
 

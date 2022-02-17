@@ -46,7 +46,7 @@ type (
 	// Its dependency is Consumer struct.
 	JetStream struct {
 		Enable    bool             `koanf:"enable"`
-		Consumers []Consumer       `koanf:"consumers"`
+		Consumers Consumer       `koanf:"consumers"`
 		MaxWait   time.Duration    `koanf:"max-wait"`
 		Replicas  int              `koanf:"replicas"`
 		MaxAge    time.Duration    `koanf:"max-age"`
