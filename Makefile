@@ -11,6 +11,9 @@ all: format lint build
 run-abacus:
 	go run -ldflags $(LDFLAGS) ./cmd/$(APP) abacus
 
+run-cranmer:
+	go run -ldflags $(LDFLAGS) ./cmd/$(APP) cranmer
+
 build:
 	go build -ldflags $(LDFLAGS) ./cmd/$(APP)
 

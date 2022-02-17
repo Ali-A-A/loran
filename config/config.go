@@ -19,14 +19,20 @@ const Prefix = "LORAN_"
 type (
 	// Config represents application configuration struct.
 	Config struct {
-		Logger Logger `koanf:"logger"`
-		NATS   NATS   `koanf:"nats"`
-		Redis  Redis  `koanf:"redis"`
+		Logger  Logger `koanf:"logger"`
+		NATS    NATS   `koanf:"nats"`
+		Cranmer Cranmer
+		Redis   Redis `koanf:"redis"`
 	}
 
 	// Logger represents logger configuration struct.
 	Logger struct {
 		Level string `koanf:"level"`
+	}
+
+	// Cranmer represents Cranmer configuration struct.
+	Cranmer struct {
+		Port int
 	}
 
 	// NATS represents nats configuration struct.

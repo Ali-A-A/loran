@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/internal/app/loran/cmd/abacus"
+	"github.com/ali-a-a/loran/internal/app/loran/cmd/cranmer"
 	"github.com/ali-a-a/loran/pkg/log"
 
 	"github.com/spf13/cobra"
@@ -22,6 +23,7 @@ func NewRootCommand() *cobra.Command {
 	})
 
 	abacus.Register(root, cfg)
+	cranmer.Register(root, cfg)
 
 	return root
 }

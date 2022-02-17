@@ -24,14 +24,16 @@ const (
 // Handler represents abacus handler which is responsible
 // to calculate distinct counts.
 type Handler struct {
-	rc *redis.Client
-	nc *cmq.Conn
+	rc      *redis.Client
+	nc      *cmq.Conn
+	subject string
+	durable string
 
 	workerPool *ants.Pool
 }
 
 // NewHandler creates new handler with *redis.Client and *cmq.Conn fields.
-func NewHandler(rc *redis.Client, conn *cmq.Conn) (*Handler, error) {
+func NewHandler(rc *redis.Client, conn *cmq.Conn, cfg config.NATS) (*Handler, error) {
 	// In this project, we use panjf2000/ants package for creating modules worker pool.
 	workerPool, err := ants.NewPool(workerSize)
 	if err != nil {
@@ -41,6 +43,8 @@ func NewHandler(rc *redis.Client, conn *cmq.Conn) (*Handler, error) {
 	return &Handler{
 		rc:         rc,
 		nc:         conn,
+		subject:    cfg.JetStream.Consumer.Subject,
+		durable:    cfg.JetStream.Consumer.Durable,
 		workerPool: workerPool,
 	}, nil
 }
@@ -49,8 +53,8 @@ func NewHandler(rc *redis.Client, conn *cmq.Conn) (*Handler, error) {
 // First, it subscribe on subject.
 // Then, it starts to fetch messages from server and submits them into the pool.
 // It get config.NATS to figure out the subject and durable of the nats.
-func (h *Handler) Run(cfg config.NATS) error {
-	sub, err := h.nc.JS.PullSubscribe(cfg.JetStream.Consumer.Subject, cfg.JetStream.Consumer.Durable)
+func (h *Handler) Run() error {
+	sub, err := h.nc.JS.PullSubscribe(h.subject, h.durable)
 	if err != nil {
 		return fmt.Errorf("failed to run handler: %w", err)
 	}
