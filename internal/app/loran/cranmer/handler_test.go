@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
 	"io/ioutil"
 	"net/http"
 	"testing"
 
 	"github.com/ali-a-a/loran/config"
+	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
 	"github.com/ali-a-a/loran/pkg/cmq"
 	"github.com/ali-a-a/loran/pkg/router"
 	"github.com/stretchr/testify/assert"
