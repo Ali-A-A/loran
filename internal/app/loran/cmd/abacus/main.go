@@ -7,6 +7,7 @@ import (
 
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/internal/app/loran/abacus"
+	"github.com/ali-a-a/loran/internal/app/loran/abacus/model"
 	"github.com/ali-a-a/loran/pkg/cmq"
 	"github.com/ali-a-a/loran/pkg/redis"
 	"github.com/sirupsen/logrus"
@@ -35,7 +36,9 @@ func main(cfg config.Config) {
 		}
 	}()
 
-	handler, err := abacus.NewHandler(rc, conn, cfg.NATS)
+	cr := model.NewInMemoryCalculator(rc)
+
+	handler, err := abacus.NewHandler(cr, conn, cfg.NATS)
 	if err != nil {
 		logrus.Fatalf("failed to create new abacus handler: %s", err.Error())
 	}

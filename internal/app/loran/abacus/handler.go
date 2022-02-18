@@ -1,14 +1,16 @@
 package abacus
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/ali-a-a/loran/internal/app/loran/abacus/model"
 
 	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
 
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/pkg/cmq"
-	"github.com/go-redis/redis/v8"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 
@@ -27,7 +29,7 @@ const (
 // Handler represents abacus handler which is responsible
 // to calculate distinct counts.
 type Handler struct {
-	rc      *redis.Client
+	cr      model.CalculatorRepo
 	nc      *cmq.Conn
 	subject string
 	durable string
@@ -36,7 +38,7 @@ type Handler struct {
 }
 
 // NewHandler creates new handler with *redis.Client and *cmq.Conn fields.
-func NewHandler(rc *redis.Client, conn *cmq.Conn, cfg config.NATS) (*Handler, error) {
+func NewHandler(cr model.CalculatorRepo, conn *cmq.Conn, cfg config.NATS) (*Handler, error) {
 	// In this project, we use panjf2000/ants package for creating modules worker pool.
 	workerPool, err := ants.NewPool(workerSize)
 	if err != nil {
@@ -44,7 +46,7 @@ func NewHandler(rc *redis.Client, conn *cmq.Conn, cfg config.NATS) (*Handler, er
 	}
 
 	return &Handler{
-		rc:         rc,
+		cr:         cr,
 		nc:         conn,
 		subject:    cfg.JetStream.Consumer.Subject,
 		durable:    cfg.JetStream.Consumer.Durable,
@@ -95,9 +97,20 @@ func (h *Handler) newTask(message *nats.Msg) func() {
 			return
 		}
 
-		logrus.Infof("new message received: user_id: %d entity_id: %d", req.UserID, req.EntityID)
+		if err := h.cr.Add(context.Background(), req.UserID, req.EntityID); err != nil {
+			logrus.Errorf("calculator repo failed: add: %s", err.Error())
+			return
+		}
 
-		err := message.Ack()
+		cnt, err := h.cr.Count(context.Background(), req.EntityID)
+		if err != nil {
+			logrus.Errorf("calculator repo failed: count: %s", err.Error())
+			return
+		}
+
+		logrus.Infof("count: %d user_id: %d event_id: %d", cnt, req.UserID, req.EntityID)
+
+		err = message.Ack()
 		if err != nil {
 			logrus.Errorf("failed to ack message: %s", err.Error())
 		}
