@@ -12,6 +12,7 @@ const (
 	exitFailure = 1
 )
 
+//nolint:gofumpt
 func main() {
 	root := cmd.NewRootCommand()
 

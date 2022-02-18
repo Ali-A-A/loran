@@ -1,9 +1,10 @@
-package cranmer
+package cranmer_test
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -14,7 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//nolint:funlen
+//nolint:funlen,noctx
 func TestAdd(t *testing.T) {
 	t.Parallel()
 
@@ -22,9 +23,9 @@ func TestAdd(t *testing.T) {
 	conn, err := cmq.CreateJetStreamConnection(natsCfg)
 	assert.NoError(t, err)
 
-	handler := NewHandler(conn, natsCfg)
+	handler := cranmer.NewHandler(conn, natsCfg)
 
-	req := &AddRequest{
+	req := &cranmer.AddRequest{
 		UserID:   123,
 		EntityID: 234,
 	}

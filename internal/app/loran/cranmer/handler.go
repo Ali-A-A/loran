@@ -11,8 +11,7 @@ import (
 )
 
 // Handler represents cranmer handler.
-// It should have *cmq.Conn to publish
-// new messages on nats server.
+// It should have *cmq.Conn to publish new messages on nats server.
 type Handler struct {
 	nc      *cmq.Conn
 	subject string
