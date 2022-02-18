@@ -16,7 +16,7 @@ func getKey(entityID int64) string {
 	return fmt.Sprintf("count:%d", entityID)
 }
 
-// NewInMemoryCalculator returns new InMemoryTrackCache
+// NewInMemoryCalculator returns new InMemoryTrackCache.
 func NewInMemoryCalculator(rc *redis.Client) *InMemoryCalculator {
 	return &InMemoryCalculator{
 		rc: rc,

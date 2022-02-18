@@ -16,8 +16,7 @@ import (
 	"github.com/ali-a-a/loran/internal/app/loran/abacus"
 )
 
-// Note:
-// Since I want to test the whole abacus package, I don't mock redis or nats clients.
+// Note: Since I want to test the whole abacus package, I don't mock redis or nats clients.
 //nolint:funlen
 func TestRun(t *testing.T) {
 	t.Parallel()
