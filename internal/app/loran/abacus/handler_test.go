@@ -103,8 +103,6 @@ func TestRun(t *testing.T) {
 				assert.NoError(t, err)
 			}()
 
-			time.Sleep(1 * time.Second)
-
 			for i := range test.messages {
 				b, err := json.Marshal(&test.messages[i])
 				assert.NoError(t, err)
@@ -112,6 +110,8 @@ func TestRun(t *testing.T) {
 				_, err = conn.JS.Publish(natsCfg.JetStream.Consumer.Subject, b)
 				assert.NoError(t, err)
 			}
+
+			time.Sleep(500 * time.Millisecond)
 
 			cnt, err := cr.Count(context.Background(), test.target.EntityID)
 			assert.NoError(t, err)
