@@ -10,8 +10,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
   test:
     name: test
     runs-on: ubuntu-latest
