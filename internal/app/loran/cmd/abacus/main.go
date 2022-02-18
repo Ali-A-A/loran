@@ -14,7 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// nolint:funlen
 func main(cfg config.Config) {
 	conn, err := cmq.CreateJetStreamConnection(cfg.NATS)
 	if err != nil {

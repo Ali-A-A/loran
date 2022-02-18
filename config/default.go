@@ -6,7 +6,7 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-// nolint:gomnd,funlen
+// nolint:gomnd
 func Default() Config {
 	return Config{
 		Logger: Logger{

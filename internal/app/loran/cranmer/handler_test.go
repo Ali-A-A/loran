@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"testing"
+
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/pkg/cmq"
 	"github.com/ali-a-a/loran/pkg/router"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"net/http"
-	"testing"
 )
 
+//nolint:funlen
 func TestAdd(t *testing.T) {
 	t.Parallel()
 
@@ -70,7 +72,14 @@ func TestAdd(t *testing.T) {
 			b, err := json.Marshal(test.req)
 			assert.NoError(t, err)
 
-			resp, err := http.Post(fmt.Sprintf("http://localhost:%d/api/add", config.Default().Cranmer.Port), "application/json", bytes.NewReader(b))
+			resp, err := http.Post(fmt.Sprintf("http://localhost:%d/api/add", config.Default().Cranmer.Port),
+				"application/json", bytes.NewReader(b))
+
+			defer func() {
+				err = resp.Body.Close()
+				assert.NoError(t, err)
+			}()
+
 			assert.NoError(t, err)
 			if test.fail {
 				assert.Equal(t, test.code, resp.StatusCode)
