@@ -7,14 +7,17 @@ require (
 	github.com/knadh/koanf v1.4.0
 	github.com/labstack/echo/v4 v4.6.3
 	github.com/nats-io/nats.go v1.13.1-0.20220121202836-972a071d373d
+	github.com/onsi/gomega v1.16.0
 	github.com/panjf2000/ants/v2 v2.4.7
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.3.0
+	github.com/stretchr/testify v1.7.0
 	go.uber.org/automaxprocs v1.4.0
 )
 
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
@@ -28,6 +31,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.7.2 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
@@ -36,4 +40,5 @@ require (
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

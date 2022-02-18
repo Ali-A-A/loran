@@ -33,10 +33,15 @@ func NewHandler(nc *cmq.Conn, cfg config.NATS) *Handler {
 // Otherwise, it returns http.StatusOK.
 func (h *Handler) Add(c echo.Context) error {
 	req := &AddRequest{}
+
 	if err := c.Bind(req); err != nil {
-		logrus.Errorf("failed to bind request: %s", err.Error())
+		logrus.Warnf("failed to bind request: %s", err.Error())
 
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "request's body is invalid"})
+	}
+
+	if req.UserID == 0 || req.EntityID == 0 {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "user_id or entity_id is invalid"})
 	}
 
 	b, err := json.Marshal(req)
