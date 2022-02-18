@@ -14,6 +14,9 @@ run-abacus:
 run-cranmer:
 	go run -ldflags $(LDFLAGS) ./cmd/$(APP) cranmer
 
+run-scheduler:
+	go run -ldflags $(LDFLAGS) ./cmd/$(APP) scheduler
+
 build:
 	go build -ldflags $(LDFLAGS) ./cmd/$(APP)
 
