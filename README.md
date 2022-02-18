@@ -4,3 +4,8 @@
 [![Codecov](https://img.shields.io/codecov/c/gh/ali-a-a/loran?logo=codecov&style=flat-square)](https://codecov.io/gh/ali-a-a/loran)
 
 A distinct counter using the HyperLogLog algorithm.
+
+## Description
+
+Sometimes, we need to count distinct count of an entity which
+is observed by some users.
