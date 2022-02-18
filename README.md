@@ -11,7 +11,7 @@ Sometimes, we need to count the distinct count of an entity that
 is observed by some users. \
 Using the HyperLogLog algorithm we could approximate the number of distinct elements in a multiset.
 For better performance, this service has three components, i.e., Abacus, Cranmer, and Scheduler. For 
-more information, you can see the architecture section.
+more information, you can check out the ![architecture](https://github.com/ali-a-a/loran/blob/main/README.md#architecture) section.
 
 ## Architecture
 
