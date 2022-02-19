@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/ali-a-a/loran/config"
@@ -18,21 +19,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//nolint:funlen,noctx
-func TestAdd(t *testing.T) {
-	t.Parallel()
-
+func TestMain(m *testing.M) {
 	natsCfg := config.Default().NATS
-	conn, err := cmq.CreateJetStreamConnection(natsCfg)
-	assert.NoError(t, err)
+	conn, _ := cmq.CreateJetStreamConnection(natsCfg)
 
 	redisCfg := config.Default().Redis
-	rc, err := redis.NewRedisClient(redisCfg)
-	assert.NoError(t, err)
+	rc, _ := redis.NewRedisClient(redisCfg)
 
 	cr := model.NewInMemoryCalculator(rc)
 
+	_ = cr.Add(context.Background(), 1, 234)
+	_ = cr.Add(context.Background(), 2, 234)
+
 	handler := cranmer.NewHandler(conn, cr, natsCfg)
+	e := router.New()
+
+	e.POST("/api/add", handler.Add)
+	e.POST("/api/count", handler.Count)
+
+	go func() {
+		_ = e.Start(fmt.Sprintf(":%d", config.Default().Cranmer.Port))
+	}()
+
+	os.Exit(m.Run())
+}
+
+//nolint:funlen,noctx
+func TestAdd(t *testing.T) {
+	t.Parallel()
 
 	req := &cranmer.AddRequest{
 		UserID:   123,
@@ -63,15 +77,6 @@ func TestAdd(t *testing.T) {
 			fail: true,
 		},
 	}
-
-	e := router.New()
-
-	e.POST("/api/add", handler.Add)
-
-	go func() {
-		err = e.Start(fmt.Sprintf(":%d", config.Default().Cranmer.Port))
-		assert.NoError(t, err)
-	}()
 
 	for i := range cases {
 		test := cases[i]
@@ -108,25 +113,6 @@ func TestAdd(t *testing.T) {
 func TestCount(t *testing.T) {
 	t.Parallel()
 
-	natsCfg := config.Default().NATS
-	conn, err := cmq.CreateJetStreamConnection(natsCfg)
-	assert.NoError(t, err)
-
-	redisCfg := config.Default().Redis
-	rc, err := redis.NewRedisClient(redisCfg)
-	assert.NoError(t, err)
-
-	cr := model.NewInMemoryCalculator(rc)
-
-	handler := cranmer.NewHandler(conn, cr, natsCfg)
-
-	err = cr.Add(context.Background(), 1, 234)
-	assert.NoError(t, err)
-	err = cr.Add(context.Background(), 2, 234)
-	assert.NoError(t, err)
-	err = cr.Add(context.Background(), 1, 234)
-	assert.NoError(t, err)
-
 	req := &cranmer.CountRequest{
 		EntityID: 234,
 	}
@@ -156,15 +142,6 @@ func TestCount(t *testing.T) {
 			fail: true,
 		},
 	}
-
-	e := router.New()
-
-	e.POST("/api/count", handler.Count)
-
-	go func() {
-		err = e.Start(fmt.Sprintf(":%d", config.Default().Cranmer.Port))
-		assert.NoError(t, err)
-	}()
 
 	for i := range cases {
 		test := cases[i]
