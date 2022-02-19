@@ -6,3 +6,8 @@ type AddRequest struct {
 	UserID   int32 `json:"user_id"`
 	EntityID int64 `json:"entity_id"`
 }
+
+// CountRequest represents count request body.
+type CountRequest struct {
+	EntityID int64 `json:"entity_id"`
+}

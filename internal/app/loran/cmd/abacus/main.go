@@ -7,7 +7,7 @@ import (
 
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/internal/app/loran/abacus"
-	"github.com/ali-a-a/loran/internal/app/loran/abacus/model"
+	"github.com/ali-a-a/loran/internal/app/loran/model"
 	"github.com/ali-a-a/loran/pkg/cmq"
 	"github.com/ali-a-a/loran/pkg/redis"
 	"github.com/sirupsen/logrus"

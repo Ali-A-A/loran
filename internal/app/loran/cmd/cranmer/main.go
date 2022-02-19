@@ -10,7 +10,9 @@ import (
 
 	"github.com/ali-a-a/loran/config"
 	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
+	"github.com/ali-a-a/loran/internal/app/loran/model"
 	"github.com/ali-a-a/loran/pkg/cmq"
+	"github.com/ali-a-a/loran/pkg/redis"
 	"github.com/ali-a-a/loran/pkg/router"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -28,7 +30,20 @@ func main(cfg config.Config) {
 		conn.NC.Close()
 	}()
 
-	handler := cranmer.NewHandler(conn, cfg.NATS)
+	rc, err := redis.NewRedisClient(cfg.Redis)
+	if err != nil {
+		logrus.Fatalf("failed to create redis connection: %s", err.Error())
+	}
+
+	defer func() {
+		if err := rc.Close(); err != nil {
+			logrus.Errorf("redis close error: %s", err.Error())
+		}
+	}()
+
+	cr := model.NewInMemoryCalculator(rc)
+
+	handler := cranmer.NewHandler(conn, cr, cfg.NATS)
 
 	e := router.New()
 
@@ -37,6 +52,7 @@ func main(cfg config.Config) {
 	api := e.Group("/api")
 
 	api.POST("/add", handler.Add)
+	api.POST("/count", handler.Count)
 
 	go func() {
 		if err := e.Start(fmt.Sprintf(":%d", cfg.Cranmer.Port)); !errors.Is(err, http.ErrServerClosed) && err != nil {
