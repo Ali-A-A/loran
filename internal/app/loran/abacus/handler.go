@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ali-a-a/loran/internal/app/loran/abacus/model"
+	"github.com/ali-a-a/loran/internal/app/loran/model"
 
 	"github.com/ali-a-a/loran/internal/app/loran/cranmer"
 
